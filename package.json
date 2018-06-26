@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/akakhaleesi/API-REST/issues"
   },
-  "homepage": "https://github.com/akakhaleesi/API-REST#readme"
+  "homepage": "https://github.com/akakhaleesi/API-REST#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "mongodb": "^3.0.10",
+    "mongoose": "^5.1.6"
+  }
 }

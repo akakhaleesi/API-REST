@@ -1,33 +1,32 @@
 var express = require('express');
 var app = module.exports = express();
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var config = require('./config/database');
+var User = require('./user.js');
 
-app.set('view engine', 'ejs');
-app.use(express.static('views'));
-app.use(express.static('public'));
+mongoose.connect(config.database);
+var db = mongoose.connection;
+
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.start = function(){
-    app.get('/voitures', app.__getVoitures);
-
-    app.get('/api/token', app.__getToken);
+    app.post('/api/token', app.__setToken);
 
     console.log('Serveur écoute le port 8085...');
     app.listen(8085);
 };
 
-app.__getVoitures = function(request, response){
-    var voitures = [
+app.__setToken = function(req, res){
+    //res.json({email:req.body.email});
+    var user = [
         {
-            nom: 'clio',
-            marque: 'Renault'
-        },
-        {
-            nom: '206',
-            marque: 'Peugeot'
+            email: req.body.email,
+            token: 'toto'
         }
     ];
-    return response.send(voitures);
-};
-
-app.__getToken = function(req, res){
-	res.render('index');
+    res.json(user);
 }
