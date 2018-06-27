@@ -45,10 +45,11 @@ app.__setToken = function(req, res){
     user.save(function(error){
         if(error){
             console.error(error);
-            return;
+            return res.json('User not saved');
         }
         else {
             console.log('user saved');
+             return res.json('User saved');
         }
     });
     return res.json(user);
@@ -71,31 +72,38 @@ app.__setText = function(req, res){
                     doc.count_words = 0;
                     doc.date = newdate;
                 }
+                if(doc.count_words === 80000){
+                    return res.status(402).send('Payment Required');
+                }
+                else {
+                    var text = req.body.text;
+                    var array = text.match(/.{1,80}/g);
+                    var final_text = '';
 
-                var text = req.body.text;
-                var array = text.match(/.{1,80}/g);
-                var final_text = '';
+                    var words = text.split(' ');
+                    var count = words.length;
+                    var inbetween = 80000 - doc.count_words;
+                    if(count > inbetween){
+                        return res.json('Only '+ inbetween +' words left for this day');
+                    }
+                    else {
+                        var update = doc.count_words + count;
+                        doc.count_words = update;
+                        doc.save();
 
-                var words = text.split(' ');
-                var count = words.length;
-                var update = doc.count_words + count;
-                console.log(newdate);
-                console.log(update);
-                doc.count_words = update;
-                doc.save();
-
-                array.forEach(function(data){
-                    final_text += data + '\n';
-                });
-                return res.json(final_text);
+                        array.forEach(function(data){
+                            final_text += data + '\n';
+                        });
+                        return res.json(final_text);
+                    }
+                }
             }
             else {
-                console.log('echec');
-                return;
+                return res.json('No text sent');
             }
         }
         else {
-            return;
+            return res.json('User not found');
         }
     });
 }
