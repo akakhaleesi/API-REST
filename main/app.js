@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var config = require('../config/database');
 var User = require('../user.js');
+var jwt = require('jsonwebtoken');
 
 mongoose.connect(config.database);
 var db = mongoose.connection;
@@ -26,21 +27,23 @@ app.start = function(){
 };
 
 app.__setToken = function(req, res){
-    //res.json({email:req.body.email});
+    var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
     var data = [
         {
             email: req.body.email,
-            token: 'toto'
+            token: token
         }
     ];
     var user = new User({
-        email: data.email,
-        token: data.token
+        email: req.body.email,
+        token: token
     });
     user.save(function(error){
-        console.log('user saved');
         if(error){
             console.error(error);
+        }
+        else {
+            console.log('user saved');
         }
     });
     res.json(user);
