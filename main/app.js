@@ -21,6 +21,8 @@ app.use(bodyParser.urlencoded({
 
 app.start = function(){
     app.post('/api/token', app.__setToken);
+    app.get('/api/justify', app.__getToken);
+    app.post('/api/justify', app.__setText);
 
     console.log('Serveur écoute le port 8085...');
     app.listen(8085);
@@ -47,4 +49,35 @@ app.__setToken = function(req, res){
         }
     });
     res.json(user);
+}
+
+app.__getToken = function(req, res){
+    User.findOne({email: req.body.email}) 
+    .exec(function(err,doc) {
+        if(doc) {
+            
+        }
+        else {
+            return;
+        }
+    });
+}
+
+app.__setText = function(req, res){
+    if(req.body.text){
+        var text = req.body.text;
+        var array = text.match(/.{1,80}/g);
+        var final_text = '';
+        console.log(array[0].length);
+
+        array.forEach(function(data){
+            final_text += data + '\n';
+        });
+        console.log(final_text);
+
+        return res.json(final_text);
+    }
+    else {
+        console.log('echec');
+    }
 }
