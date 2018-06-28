@@ -13,6 +13,10 @@ const UserSchema = mongoose.Schema({
 	count_words:{
 		type: Number,
 		required: true
+	},
+	date:{
+		type: String,
+		required: true
 	}
 });
 

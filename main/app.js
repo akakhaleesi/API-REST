@@ -29,16 +29,18 @@ app.start = function(){
 
 app.__setToken = function(req, res){
     var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
-    // var data = [
-    //     {
-    //         email: req.body.email,
-    //         token: token
-    //     }
-    // ];
+    var date = new Date();
+    var month = date.getUTCMonth() + 1;
+    var day = date.getUTCDate();
+    var year = date.getUTCFullYear();
+
+    var newdate = year + "/" + month + "/" + day;
+
     var user = new User({
         email: req.body.email,
         token: token,
-        count_words: 0
+        count_words: 0,
+        date: newdate
     });
     user.save(function(error){
         if(error){
@@ -57,6 +59,19 @@ app.__setText = function(req, res){
     .exec(function(err,doc){
         if(doc){
             if(req.body.text){
+
+                var date = new Date();
+                var month = date.getUTCMonth() + 1;
+                var day = date.getUTCDate();
+                var year = date.getUTCFullYear();
+
+                newdate = year + "/" + month + "/" + day;
+
+                if(doc.date != newdate){
+                    doc.count_words = 0;
+                    doc.date = newdate;
+                }
+
                 var text = req.body.text;
                 var array = text.match(/.{1,80}/g);
                 var final_text = '';
@@ -64,13 +79,10 @@ app.__setText = function(req, res){
                 var words = text.split(' ');
                 var count = words.length;
                 var update = doc.count_words + count;
-                console.log(doc.count_words);
-                console.log(count);
+                console.log(newdate);
                 console.log(update);
                 doc.count_words = update;
                 doc.save();
-
-                //console.log(array[0].length);
 
                 array.forEach(function(data){
                     final_text += data + '\n';
