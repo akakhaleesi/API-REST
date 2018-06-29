@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var config = require('../config/database');
 var User = require('../user.js');
 var jwt = require('jsonwebtoken');
+var final_text = '';
 
 mongoose.connect(config.database);
 var db = mongoose.connection;
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({
 app.start = function(){
     app.post('/api/token', app.__setToken);
     app.post('/api/justify', app.__setText);
+    app.get('/api/justify', app.__getText);
 
     console.log('Serveur écoute le port 8085...');
     app.listen(8085);
@@ -83,7 +85,7 @@ app.__setText = function(req, res){
                     else {
                         var text = req.body;
                         var array = text.match(/.{1,80}/g);
-                        var final_text = '';
+                        final_text = '';
 
                         var words = text.split(' ');
                         var count = words.length;
@@ -99,6 +101,7 @@ app.__setText = function(req, res){
                             array.forEach(function(data){
                                 final_text += data + '\n';
                             });
+                            
                             return res.json(final_text);
                         }
                     }
@@ -115,4 +118,9 @@ app.__setText = function(req, res){
     else {
         return res.json('Missing email and/or token in header');
     }
+}
+
+app.__getText = function(req, res){
+   res.setHeader('content-type', 'text/plain');
+   return res.send(final_text);
 }
